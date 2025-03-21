@@ -9,30 +9,37 @@ vector<double> ge(vector<vector<double>> A, vector<double> B) {
     int n = B.size();
 
     for (int i = 0; i < n; i++) {
+
+        // for finding the pivot row , to avoid non-zero division
         int prow = i;
         for (int j = i + 1; j < n; j++) {
             if (abs(A[j][i]) > abs(A[prow][i])) {
                 prow = j;
             }
         }
+        // swap if i was not the pivot row we needed
         if (i != prow) {
             swap(A[i], A[prow]);
             swap(B[i], B[prow]);
         }
-
-        if (abs(A[i][i]) < eps) {
-            cerr << "No solution" << endl;
-            exit(EXIT_FAILURE);
-        }
+        // error hanlding part
+                if (abs(A[i][i]) < eps) {
+                    cerr << "No solution" << endl;
+                    exit(EXIT_FAILURE);
+                }
+        
+        
         for (int j = i + 1; j < n; j++) {
-            double factor = A[j][i] / A[i][i];
+            // fac is the factor which will be used to make pivot col elments zero
+            double fac = A[j][i] / A[i][i];
             for (int k = i; k < n; k++) {
-                A[j][k] -= factor * A[i][k];
+                A[j][k] -= fac * A[i][k];
             }
-            B[j] -= factor * B[i];
+            B[j] -= fac * B[i];
         }
     }
 
+    // Back substituion on upper triangular matrix
     vector<double> x(n, 0.0);
     for (int i = n - 1; i >= 0; i--) {
         x[i] = B[i];
@@ -47,9 +54,9 @@ vector<double> ge(vector<vector<double>> A, vector<double> B) {
 
 int main() {
     vector<vector<double>> A = {
-        {2, -1, 1},
-        {1, 3, 2},
-        {1, -1, 2}
+        {2, 0, 0},
+        {0, 3, 0},
+        {0, 0, 2}
     };
     vector<double> B = {8, 13, 5};
 
@@ -60,14 +67,6 @@ int main() {
         cout << val << " ";
     }
     cout << endl;
-
-    vector<vector<double>> A1 = {
-        {1, 2, 3},
-        {2, 4, 6},
-        {3, 6, 9}
-    };
-    vector<double> B1 = {6, 12, 18};
-    vector<double> x_singular = ge(A1, B1);
 
     return 0;
 }
